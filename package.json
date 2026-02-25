@@ -1,0 +1,15 @@
+{
+  "name": "euler-ml",
+  "version": "0.1.0",
+  "description": "Euler diagram markup language renderer",
+  "module": "dist/euler-ml.esm.m.js",
+  "types": "dist/euler-ml.d.ts",
+  "scripts": {
+    "dev": "parcel index.html --open",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "parcel": "^2.12.0",
+    "typescript": "^5.4.0"
+  }
+}
