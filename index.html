@@ -5,17 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>euler-ml</title>
   <style>
-    body { margin: 0; background: #333; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    body { margin: 0; background: #222; color: white; font: 13px system-ui; display: grid; place-items: center; min-height: 100vh; }
     pre.euler-ml { display: none; }
+    .euler-ml-wrapper { display: flex; gap: 16px; align-items: flex-start; }
+    canvas { witdth: 100%; background: #333; border-radius: 8px; }
+    .force-panel { width: 230px; display: grid; gap: 10px; }
+    .force-control { display: grid; gap: 4px; }
+    .force-control span { display: flex; justify-content: space-between; }
+    .force-control input { width: 100%; }
   </style>
 </head>
 <body>
 
 <pre class="euler-ml">
-set A
-set B
-node a in A
-node b in A B
+category Parallel parallel #2F80ED
+category Algorithms algorithms #27AE60
+category Networks networks #EB5757
+category Security security
+
+item "GPU Programming" in parallel
+item "Graph Algorithms" in algorithms
+item "Network Protocols" in networks
+item "Concurrent Programming" in parallel algorithms
+item "Parallel Computing" in parallel algorithms
+item "Distributed Systems" in parallel networks
+item "Routing Algorithms" in algorithms networks
+item "Network Security" in networks security
+item "*" in networks algorithms parallel
 </pre>
 
 <script type="module" src="./src/main.ts"></script>
