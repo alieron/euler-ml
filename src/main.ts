@@ -1,21 +1,20 @@
-import { parse } from './parser';
-import { renderCanvas } from './renderer';
+import { renderGraph } from "./graph";
+import { type EulerDiagram, getLayout } from "./layout";
 
-export function renderAll(root: Document | Element = document): void {
-  root.querySelectorAll('pre.euler-ml').forEach(block => {
-    try {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'euler-ml-wrapper';
-      renderCanvas(wrapper, parse(block.textContent ?? ''));
-      block.replaceWith(wrapper);
-    } catch (err) {
-      console.error('[euler-ml] Failed to render diagram:', err);
-    }
-  });
-}
+const diagram: EulerDiagram = {
+  sets: [
+    { id: "a", label: "A" },
+    { id: "b", label: "B" },
+    { id: "c", label: "C" },
+  ],
+  nodes: [
+    { id: "a-only", label: "a1", sets: ["a"] },
+    { id: "b-only", label: "b", sets: ["b"] },
+    { id: "c-only", label: "c", sets: ["c"] },
+    { id: "a-b", label: "ab", sets: ["a", "b"] },
+    { id: "b-c", label: "bc", sets: ["b", "c"] },
+    { id: "a-c", label: "ac", sets: ["a", "c"] },
+  ],
+};
 
-if (typeof document !== 'undefined') {
-  document.readyState === 'loading'
-    ? document.addEventListener('DOMContentLoaded', () => renderAll())
-    : renderAll();
-}
+renderGraph(getLayout(diagram));
