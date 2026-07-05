@@ -1,32 +1,15 @@
-export type GraphNode = {
-  id: string;
-  x: number;
-  y: number;
-  label: string;
-};
-
-export type GraphEdge = {
-  from: string;
-  to: string;
-  weight: number | null;
-};
-
-export type Graph = {
-  nodes: GraphNode[];
-  edges: GraphEdge[];
-};
+import { type Layout, type LayoutSet } from "./layout";
 
 const svgNamespace = "http://www.w3.org/2000/svg";
 const viewBoxWidth = 640;
 const padding = 48;
 
-export function renderGraph(graph: Graph) {
+export function renderGraph(graph: Layout) {
   const graphNodes = graph.nodes.map((node) => ({
     ...node,
     x: scale(node.x),
     y: scale(node.y),
   }));
-  const graphEdges = graph.edges;
 
   document.body.replaceChildren();
   document.body.style.margin = "0";
@@ -44,61 +27,88 @@ export function renderGraph(graph: Graph) {
 
   document.body.append(svg);
 
-  const nodesById = new Map(graphNodes.map((node) => [node.id, node]));
-
-  for (const edge of graphEdges) {
-    const from = nodesById.get(edge.from);
-    const to = nodesById.get(edge.to);
-
-    if (!from || !to) {
-      continue;
-    }
-
-    const line = createSvgElement("line", {
-      x1: String(from.x),
-      y1: String(from.y),
-      x2: String(to.x),
-      y2: String(to.y),
-      stroke: "#777",
-      "stroke-width": "2",
-    });
-
-    svg.append(line);
-
-    if (edge.weight !== null) {
-      const label = createSvgElement("text", {
-        x: String((from.x + to.x) / 2),
-        y: String((from.y + to.y) / 2 - 8),
-        fill: "#ddd",
-        "font-family": "system-ui, sans-serif",
-        "font-size": "16",
-        "text-anchor": "middle",
-      });
-      label.textContent = String(edge.weight);
-      svg.append(label);
-    }
-  }
+  drawCardinalLines(svg, graph.sets.length);
+  drawSetHulls(svg, graph.sets);
 
   for (const node of graphNodes) {
     const point = createSvgElement("circle", {
       cx: String(node.x),
       cy: String(node.y),
       r: "6",
-      fill: "#fff",
+      fill: node.color ?? "#fff",
     });
 
-    const label = createSvgElement("text", {
-      x: String(node.x),
-      y: String(node.y - 14),
-      fill: "#fff",
-      "font-family": "system-ui, sans-serif",
-      "font-size": "16",
-      "text-anchor": "middle",
-    });
-    label.textContent = node.label;
+    svg.append(point);
 
-    svg.append(point, label);
+    if (node.label) {
+      const label = createSvgElement("text", {
+        x: String(node.x),
+        y: String(node.y - 14),
+        fill: "#fff",
+        "font-family": "system-ui, sans-serif",
+        "font-size": "16",
+        "text-anchor": "middle",
+      });
+      label.textContent = node.label;
+      svg.append(label);
+    }
   }
+}
+
+function drawCardinalLines(svg: SVGSVGElement, count: number) {
+  if (count <= 1) {
+    return;
+  }
+
+  for (let index = 0; index < count; index++) {
+    const direction = getCardinalDirection(index, count);
+
+    svg.append(createSvgElement("line", {
+      x1: String(scale(0)),
+      y1: String(scale(0)),
+      x2: String(scale(direction.x)),
+      y2: String(scale(direction.y)),
+      stroke: "#2f2f2f",
+      "stroke-width": "1",
+    }));
+  }
+}
+
+function getCardinalDirection(index: number, count: number) {
+  if (count === 2) {
+    return { x: index === 0 ? 1 : -1, y: 0 };
+  }
+
+  const angle = (index / count) * Math.PI * 2;
+
+  return { x: -Math.sin(angle), y: Math.cos(angle) };
+}
+
+function drawSetHulls(svg: SVGSVGElement, sets: LayoutSet[]) {
+  sets.forEach((set) => {
+    const hull = set.hull.map((point) => ({ x: scale(point.x), y: scale(point.y) }));
+
+    if (hull.length === 2) {
+      svg.append(createSvgElement("line", {
+        x1: String(hull[0].x),
+        y1: String(hull[0].y),
+        x2: String(hull[1].x),
+        y2: String(hull[1].y),
+        stroke: set.color,
+        "stroke-opacity": "0.75",
+        "stroke-width": "2",
+      }));
+    } else if (hull.length > 2) {
+      svg.append(createSvgElement("polygon", {
+        points: hull.map((point) => `${point.x},${point.y}`).join(" "),
+        fill: set.color,
+        "fill-opacity": "0.14",
+        stroke: set.color,
+        "stroke-opacity": "0.75",
+        "stroke-width": "2",
+      }));
+    }
+  });
 }
 
 function scale(x: number) {
