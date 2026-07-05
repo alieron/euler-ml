@@ -1,4 +1,4 @@
-import { getConvexHull } from "./hull";
+import { getSetHull } from "./hull";
 import { ingestDiagram } from "./ingest";
 import { positionNodes } from "./position";
 
@@ -58,10 +58,10 @@ export function getLayout(diagram: EulerDiagram): Layout {
       id: set.id,
       label: set.label,
       color: set.color ?? setColors[index % setColors.length],
-      hull: getConvexHull(positionedNodes.filter((node) => node.sets.includes(set.id))).map((point) => ({
-        x: point.x,
-        y: point.y,
-      })),
+      hull: getSetHull(
+        positionedNodes.filter((node) => node.sets.includes(set.id)),
+        positionedNodes.filter((node) => !node.sets.includes(set.id)),
+      ),
     })),
   };
 }
