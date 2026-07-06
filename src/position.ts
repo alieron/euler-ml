@@ -157,11 +157,10 @@ function getClosestCardinalLinePoint(node: PositionedNode, setCount: number) {
 }
 
 function getCardinalDirection(index: number, count: number) {
-  const angle = (index / count) * Math.PI * 2;
+  const step = (Math.PI * 2) / count;
+  const angle = index * step + (count % 2 === 0 ? step / 2 : 0);
 
-  return count % 2 == 0
-    ? { x: Math.cos(angle), y: Math.sin(angle) }
-    : { x: -Math.sin(angle), y: Math.cos(angle) };
+  return { x: -Math.sin(angle), y: Math.cos(angle) };
 }
 
 function getPairForce(distance: number, target: ReturnType<typeof getPairTarget>) {

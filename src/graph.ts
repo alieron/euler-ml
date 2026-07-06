@@ -27,7 +27,6 @@ export function renderGraph(graph: Layout) {
 
   document.body.append(svg);
 
-  drawCardinalLines(svg, graph.sets.length);
   drawSetHulls(svg, graph.sets);
 
   for (const node of graphNodes) {
@@ -53,35 +52,6 @@ export function renderGraph(graph: Layout) {
       svg.append(label);
     }
   }
-}
-
-function drawCardinalLines(svg: SVGSVGElement, count: number) {
-  if (count <= 1) {
-    return;
-  }
-
-  for (let index = 0; index < count; index++) {
-    const direction = getCardinalDirection(index, count);
-
-    svg.append(createSvgElement("line", {
-      x1: String(scale(0)),
-      y1: String(scale(0)),
-      x2: String(scale(direction.x)),
-      y2: String(scale(direction.y)),
-      stroke: "#2f2f2f",
-      "stroke-width": "1",
-    }));
-  }
-}
-
-function getCardinalDirection(index: number, count: number) {
-  if (count === 2) {
-    return { x: index === 0 ? 1 : -1, y: 0 };
-  }
-
-  const angle = (index / count) * Math.PI * 2;
-
-  return { x: -Math.sin(angle), y: Math.cos(angle) };
 }
 
 function drawSetHulls(svg: SVGSVGElement, sets: LayoutSet[]) {
