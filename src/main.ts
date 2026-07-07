@@ -12,7 +12,6 @@ declare global {
 const initialCode = `def width 980
 def height 760
 def padding 96
-def hullPadding 28
 def cornerRadius 30
 def concaveRadius 18
 def nodeFontSize 13
