@@ -1,171 +1,243 @@
-import { renderGraph } from "./graph";
-import { type EulerDiagram, type EulerNode, getLayout } from "./layout";
+import "./editor.css";
+import "./syntax-highlight";
+import { parse } from "./parser";
+import { renderSVG } from "./renderer";
 
-const diagrams: EulerDiagram[] = [
-  {
-    sets: [
-      { id: "a", label: "A" },
-      { id: "b", label: "B" },
-      { id: "c", label: "C" },
-    ],
-    nodes: [
-      node("a-only", "a1", ["a"]),
-      node("b-only", "b", ["b"]),
-      node("c-only", "c", ["c"]),
-      node("a-b", "ab", ["a", "b"]),
-      node("b-c", "bc", ["b", "c"]),
-      node("a-c", "ac", ["a", "c"]),
-      node("a-b-c", "abc", ["a", "b", "c"]),
-    ],
-  },
-  {
-    sets: [{ id: "a", label: "A" }],
-    nodes: [
-      node("a1", "a1", ["a"]),
-      node("a2", "a2", ["a"]),
-      node("a3", "a3", ["a"]),
-      node("a4", "a4", ["a"]),
-      node("a5", "a5", ["a"]),
-      node("a6", "a6", ["a"]),
-    ],
-  },
-  {
-    sets: [
-      { id: "a", label: "A" },
-      { id: "b", label: "B" },
-      { id: "c", label: "C" },
-      { id: "d", label: "D" },
-      { id: "e", label: "E" },
-      { id: "f", label: "F" },
-    ],
-    nodes: [
-      node("a", "A", ["a"]),
-      node("b", "B", ["b"]),
-      node("c", "C", ["c"]),
-      node("d", "D", ["d"]),
-      node("e", "E", ["e"]),
-      node("f", "F", ["f"]),
-    ],
-  },
-  {
-    sets: [
-      { id: "a", label: "A" },
-      { id: "b", label: "B" },
-      { id: "c", label: "C" },
-      { id: "d", label: "D" },
-    ],
-    nodes: [
-      node("a", "A", ["a"]),
-      node("ab", "AB", ["a", "b"]),
-      node("abc", "ABC", ["a", "b", "c"]),
-      node("abcd", "ABCD", ["a", "b", "c", "d"]),
-      node("bcd", "BCD", ["b", "c", "d"]),
-      node("cd", "CD", ["c", "d"]),
-      node("d", "D", ["d"]),
-    ],
-  },
-  {
-    sets: [
-      { id: "a", label: "A" },
-      { id: "b", label: "B" },
-      { id: "c", label: "C" },
-      { id: "d", label: "D" },
-    ],
-    nodes: [
-      node("a", "A", ["a"]),
-      node("b", "B", ["b"]),
-      node("c", "C", ["c"]),
-      node("d", "D", ["d"]),
-      node("ab", "AB", ["a", "b"]),
-      node("ac", "AC", ["a", "c"]),
-      node("ad", "AD", ["a", "d"]),
-      node("bc", "BC", ["b", "c"]),
-      node("bd", "BD", ["b", "d"]),
-      node("cd", "CD", ["c", "d"]),
-      node("abc", "ABC", ["a", "b", "c"]),
-      node("abd", "ABD", ["a", "b", "d"]),
-      node("acd", "ACD", ["a", "c", "d"]),
-      node("bcd", "BCD", ["b", "c", "d"]),
-      node("abcd", "ABCD", ["a", "b", "c", "d"]),
-    ],
-  },
-  {
-    sets: [
-      { id: "a", label: "A" },
-      { id: "b", label: "B" },
-      { id: "c", label: "C" },
-    ],
-    nodes: [
-      node("outside1", "out1", []),
-      node("outside2", "out2", []),
-      node("a", "A", ["a"]),
-      node("b", "B", ["b"]),
-      node("c", "C", ["c"]),
-      node("ab", "AB", ["a", "b"]),
-      node("abc", "ABC", ["a", "b", "c"]),
-    ],
-  },
-  {
-    sets: [
-      { id: "a", label: "A" },
-      { id: "b", label: "B" },
-      { id: "c", label: "C" },
-      { id: "d", label: "D" },
-    ],
-    nodes: [
-      node("a1", "a1", ["a"]),
-      node("a2", "a2", ["a"]),
-      node("ab", "AB", ["a", "b"]),
-      node("bridge", "BC", ["b", "c"]),
-      node("cd", "CD", ["c", "d"]),
-      node("d1", "d1", ["d"]),
-      node("d2", "d2", ["d"]),
-    ],
-  },
-];
-
-let diagramIndex = 0;
-
-renderCurrentDiagram();
-
-function node(id: string, label: string, sets: string[]): EulerNode {
-  return { id, label, sets };
+declare global {
+  interface Window {
+    CodeMirror: any;
+  }
 }
 
-function renderCurrentDiagram() {
-  renderGraph(getLayout(diagrams[diagramIndex]));
-  addControls();
+const initialCode = `def width 980
+def height 760
+def padding 96
+def hullPadding 28
+def cornerRadius 30
+def concaveRadius 18
+def nodeFontSize 13
+def setLabelFontSize 16
+
+set algo "Algorithms & Theory" #f87171
+set ai "Artificial Intelligence" #60a5fa
+set graphics "Computer Graphics" #34d399
+set security "Computer Security" #fbbf24
+set networks "Networking & Distributed Systems" #c084fc
+set parallel "Parallel Computing" #22d3ee
+
+node CS2105 networks
+node CS2107 security
+node CS2109S ai
+node CS3103 networks
+node CS3210 parallel
+node CS3211 parallel
+node CS3218 graphics
+node CS3221 security
+node CS3230 algo
+node CS3231 algo
+node CS3233 algo
+node CS3235 security
+node CS3236 algo
+node CS3237 networks
+node CS3240 graphics
+node CS3241 graphics
+node CS3242 graphics
+node CS3243 ai
+node CS3244 ai
+node CS3247 graphics
+node CS3249 graphics
+node CS3263 ai
+node CS3264 ai
+node CS3268 ai
+node CS4220 ai
+node CS4222 networks
+node CS4223 parallel
+node CS4226 networks
+node CS4230 security
+node CS4231 algo networks parallel
+node CS4232 algo
+node CS4234 algo
+node CS4236 security
+node CS4238 security
+node CS4239 security
+node CS4240 graphics
+node CS4243 ai graphics
+node CS4244 ai
+node CS4246 ai
+node CS4247 graphics
+node CS4248 ai
+node CS4249 graphics
+node CS4257 algo security
+node CS4261 algo ai
+node CS4262 ai
+node CS4263 ai
+node CS4268 algo
+node CS4269 algo ai
+node CS4276 security
+node CS4277 ai
+node CS4278 ai
+node CS4330 algo
+node CS4344 networks
+node CS4350 graphics
+node CS4351 graphics
+node CS4430 algo
+node CS5215 ai
+node CS5222 parallel
+node CS5223 networks parallel
+node CS5224 networks parallel
+node CS5228 ai
+node CS5229 networks
+node CS5230 algo
+node CS5231 security
+node CS5234 algo
+node CS5236 algo
+node CS5237 algo graphics
+node CS5238 algo
+node CS5239 parallel
+node CS5240 graphics
+node CS5242 ai
+node CS5248 networks
+node CS5250 security parallel
+node CS5260 ai
+node CS5321 security networks
+node CS5322 security
+node CS5330 algo
+node CS5331 security
+node CS5332 security
+node CS5339 ai
+node CS5340 ai
+node CS5343 graphics
+node CS5346 graphics
+node IFS4101 security
+node IFS4102 security
+node IFS4103 security`;
+
+document.body.innerHTML = `
+  <header>
+    <h1>euler-ml</h1>
+    <p class="subtitle">Interactive Euler Diagram Editor</p>
+  </header>
+  <main>
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Code Editor</span>
+        <button class="copy-btn" id="copyCode" type="button">Copy Code</button>
+      </div>
+      <div class="panel-content"><div id="editor"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">SVG Preview</span>
+        <div>
+          <button class="copy-btn" id="copyPNG" type="button">Copy PNG</button>
+          <button class="copy-btn" id="copySVG" type="button">Copy SVG</button>
+        </div>
+      </div>
+      <div class="panel-content"><div id="preview"></div></div>
+    </div>
+  </main>`;
+
+const preview = getElement("preview");
+const copyCodeButton = getElement("copyCode");
+const copyPngButton = getElement("copyPNG");
+const copySvgButton = getElement("copySVG");
+const editor = window.CodeMirror(getElement("editor"), {
+  value: initialCode,
+  mode: "euler-ml",
+  lineNumbers: true,
+  autofocus: true,
+  tabSize: 2,
+  indentUnit: 2,
+  viewportMargin: Infinity,
+});
+
+let currentSvg = "";
+
+render();
+
+let renderTimeout: number | undefined;
+editor.on("change", () => {
+  window.clearTimeout(renderTimeout);
+  renderTimeout = window.setTimeout(render, 250);
+});
+
+copyCodeButton.addEventListener("click", () => copyText(copyCodeButton, editor.getValue(), "Copy Code"));
+copySvgButton.addEventListener("click", () => copyText(copySvgButton, currentSvg, "Copy SVG"));
+copyPngButton.addEventListener("click", copyPng);
+
+function render() {
+  try {
+    currentSvg = renderSVG(parse(editor.getValue()));
+    preview.innerHTML = `<div class="euler-ml-wrapper">${currentSvg}</div>`;
+  } catch (error) {
+    currentSvg = "";
+    preview.innerHTML = `<div class="error">${escapeHtml(error instanceof Error ? error.message : String(error))}</div>`;
+  }
 }
 
-function addControls() {
-  const previous = createButton("<", "left", () => {
-    diagramIndex = (diagramIndex - 1 + diagrams.length) % diagrams.length;
-    renderCurrentDiagram();
-  });
-  const next = createButton(">", "right", () => {
-    diagramIndex = (diagramIndex + 1) % diagrams.length;
-    renderCurrentDiagram();
-  });
+async function copyText(button: HTMLElement, value: string, label: string) {
+  if (!value) {
+    return;
+  }
 
-  document.body.append(previous, next);
+  await navigator.clipboard.writeText(value);
+  markCopied(button, label);
 }
 
-function createButton(label: string, side: "left" | "right", onClick: () => void) {
-  const button = document.createElement("button");
-  button.textContent = label;
-  button.type = "button";
-  button.style.position = "fixed";
-  button.style.top = "50%";
-  button.style[side] = "20px";
-  button.style.transform = "translateY(-50%)";
-  button.style.width = "40px";
-  button.style.height = "40px";
-  button.style.border = "1px solid #666";
-  button.style.background = "#111";
-  button.style.color = "#fff";
-  button.style.font = "24px system-ui, sans-serif";
-  button.style.cursor = "pointer";
-  button.addEventListener("click", onClick);
+async function copyPng() {
+  const svg = preview.querySelector("svg");
 
-  return button;
+  if (!svg) {
+    return;
+  }
+
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  const image = new Image();
+  const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)], { type: "image/svg+xml;charset=utf-8" }));
+
+  if (!context) {
+    URL.revokeObjectURL(url);
+    return;
+  }
+
+  canvas.width = svg.width.baseVal.value;
+  canvas.height = svg.height.baseVal.value;
+
+  image.onload = () => {
+    context.drawImage(image, 0, 0);
+    URL.revokeObjectURL(url);
+    canvas.toBlob(async (blob) => {
+      if (!blob) {
+        return;
+      }
+
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      markCopied(copyPngButton, "Copy PNG");
+    }, "image/png");
+  };
+  image.src = url;
+}
+
+function markCopied(button: HTMLElement, label: string) {
+  button.textContent = "Copied!";
+  button.classList.add("copied");
+  window.setTimeout(() => {
+    button.textContent = label;
+    button.classList.remove("copied");
+  }, 1500);
+}
+
+function getElement(id: string) {
+  const element = document.getElementById(id);
+
+  if (!element) {
+    throw new Error(`Missing #${id}`);
+  }
+
+  return element;
+}
+
+function escapeHtml(value: string) {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }

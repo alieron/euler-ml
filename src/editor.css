@@ -1,0 +1,182 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  height: 100vh;
+  overflow: hidden;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+header {
+  height: 80px;
+  padding: 1rem 2rem;
+  background: #252526;
+  border-bottom: 1px solid #3e3e42;
+}
+
+h1 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin-top: 0.25rem;
+  color: #858585;
+  font-size: 0.875rem;
+}
+
+main {
+  display: flex;
+  height: calc(100vh - 80px);
+}
+
+.panel {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  border-right: 1px solid #3e3e42;
+}
+
+.panel:last-child {
+  border-right: 0;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: #2d2d2d;
+  border-bottom: 1px solid #3e3e42;
+}
+
+.panel-title {
+  color: #cccccc;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.copy-btn {
+  cursor: pointer;
+  border: 0;
+  border-radius: 3px;
+  padding: 0.4rem 0.75rem;
+  background: #0e639c;
+  color: #ffffff;
+  font-size: 0.75rem;
+}
+
+.copy-btn:hover {
+  background: #1177bb;
+}
+
+.copy-btn.copied {
+  background: #16825d;
+}
+
+.panel-content {
+  position: relative;
+  flex: 1;
+  overflow: auto;
+}
+
+#preview {
+  display: flex;
+  min-height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #111111;
+}
+
+.euler-ml-wrapper {
+  display: inline-block;
+}
+
+.euler-ml-wrapper svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.error {
+  max-width: 48rem;
+  color: #f48771;
+  font-family: JetBrains Mono, Consolas, monospace;
+  font-size: 0.875rem;
+  white-space: pre-wrap;
+}
+
+.CodeMirror {
+  height: 100%;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-family: JetBrains Mono, Consolas, Monaco, monospace;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.CodeMirror-gutters {
+  background: #252526;
+  border-right: 1px solid #3e3e42;
+}
+
+.CodeMirror-linenumber {
+  color: #858585;
+}
+
+.CodeMirror-cursor {
+  border-left: 2px solid #d4d4d4;
+}
+
+.CodeMirror-selected {
+  background: rgb(255 255 255 / 10%) !important;
+}
+
+.cm-eml-keyword {
+  color: #569cd6;
+  font-weight: 700;
+}
+
+.cm-eml-setting {
+  color: #9cdcfe;
+}
+
+.cm-eml-value {
+  color: #b5cea8;
+}
+
+.cm-eml-label {
+  color: #ce9178;
+}
+
+.cm-eml-color {
+  color: #d7ba7d;
+  font-weight: 700;
+}
+
+.cm-eml-id {
+  color: #dcdcaa;
+}
+
+.cm-eml-comment {
+  color: #6a9955;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  main {
+    flex-direction: column;
+  }
+
+  .panel {
+    border-right: 0;
+    border-bottom: 1px solid #3e3e42;
+  }
+}
